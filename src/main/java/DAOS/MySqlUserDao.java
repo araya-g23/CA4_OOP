@@ -14,51 +14,7 @@ import java.util.List;
 
 public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
 
-//    public List<Expense> findAllExspense() throws DAOException {
-//        Connection conn = null;
-//        PreparedStatement stmt = null;
-//        ResultSet rs = null;
-//        List<Expense> expenseList = new ArrayList<>();
-//
-//        try {
-//            conn = this.getConnection();
-//
-//            String sql = "SELECT * FROM tasks";
-//            stmt = conn.prepareStatement(sql);
-//
-//            rs = stmt.executeQuery();
-//            while (rs.next()) {
-//                int expenseId = rs.getInt("expenseId");
-//                String title = rs.getString("title");
-//                Double amount = rs.getDouble("amount");
-//                Date dateIncurred = rs.getDate("dateIncurred");
-//
-//                Expense expense = new Expense(expenseId,title,amount,dateIncurred);
-//                expenseList.add(expense);
-//            }
-//
-//        } catch (SQLException e) {
-//            throw new DAOException("findAllTasks() " + e.getMessage());
-//        } finally {
-//            try {
-//                if (rs != null) {
-//                    rs.close();
-//                }
-//
-//                if (stmt != null) {
-//                    stmt.close();
-//                }
-//
-//                if (conn != null) {
-//                    freeConnection(conn);
-//                }
-//            } catch (SQLException sqlEx) {
-//                throw new DAOException("findAllTasks() " + sqlEx.getMessage());
-//            }
-//        }
-//
-//        return expenseList;
-//    }
+
 
     @Override
     public List<Expense> findAllExpense() throws DAOException {
@@ -308,5 +264,174 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
             }
         }
 
+    }
+
+    @Override
+    public double getTotalExpense() throws DAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        double total = 0;
+
+        try{
+            conn = this.getConnection();
+            String sql="SELECT SUM(amount) FROM expenses";
+            stmt=conn.prepareStatement(sql);
+            rs=stmt.executeQuery();
+        }
+        catch (SQLException e){
+            throw new DAOException("getTotalExpenses() " + e.getMessage());
+        }
+        finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+                if (conn != null) {
+                    freeConnection(conn);
+                }
+            } catch (SQLException sqlEx) {
+                throw new DAOException("getTotalExpenses " + sqlEx.getMessage());
+            }
+        }
+        return total;
+    }
+
+    @Override
+    public double getTotalIncome() throws DAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        double total = 0;
+
+        try{
+            conn = this.getConnection();
+            String sql="SELECT SUM(amount) FROM OOP_CA4";
+            stmt=conn.prepareStatement(sql);
+            rs=stmt.executeQuery();
+        }
+        catch (SQLException e){
+            throw new DAOException("getTotalIncome() " + e.getMessage());
+        }
+        finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+                if (conn != null) {
+                    freeConnection(conn);
+                }
+            } catch (SQLException sqlEx) {
+                throw new DAOException("getTotalIncome " + sqlEx.getMessage());
+            }
+        }
+        return total;
+
+    }
+
+    @Override
+    public List<Expense> findExpensesByMonth(int month,int year) throws DAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Expense>expenseList = new ArrayList<>();
+
+        try{
+            conn = this.getConnection();
+            String sql="SELECT * FROM expenses WHERE month(dateIncurred) = ? AND YEAR(dateIncurred) = ?";
+            stmt=conn.prepareStatement(sql);
+            stmt.setInt(1,month);
+            stmt.setInt(2,year);
+            rs=stmt.executeQuery();
+
+            while(rs.next()){
+                expenseList.add(new Expense(
+                        rs.getInt("expenseID"),
+                        rs.getString("title"),
+                        rs.getString("category"),
+                        rs.getDouble("amount"),
+                        rs.getDate("dateIncurred")
+                ));
+            }
+        }
+        catch (SQLException e){
+            throw new DAOException("findExpensesByMonth() " + e.getMessage());
+        }
+        finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+                if (conn != null) {
+                    freeConnection(conn);
+                }
+            } catch (SQLException sqlEx) {
+                throw new DAOException("findExpensesByMonth " + sqlEx.getMessage());
+            }
+        }
+        return expenseList;
+
+    }
+
+    @Override
+    public List<Income> findIncomeByMonth(int month,int year) throws DAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Income>incomeList = new ArrayList<>();
+
+        try{
+            conn = this.getConnection();
+            String sql="SELECT * FROM OOP_CA4 WHERE month(dateEarned) = ? AND YEAR(dateEarned) = ?";
+            stmt=conn.prepareStatement(sql);
+            stmt.setInt(1,month);
+            stmt.setInt(2,year);
+            rs=stmt.executeQuery();
+
+            while(rs.next()){
+                incomeList.add(new Income(
+                        rs.getInt("incomeId"),
+                        rs.getString("title"),
+                        rs.getDouble("amount"),
+                        rs.getDate("dateEarned")
+                ));
+            }
+        }
+        catch (SQLException e){
+            throw new DAOException("findIncomeByMonth() " + e.getMessage());
+        }
+        finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+                if (conn != null) {
+                    freeConnection(conn);
+                }
+            } catch (SQLException sqlEx) {
+                throw new DAOException("findIncomeByMonth " + sqlEx.getMessage());
+            }
+        }
+        return incomeList;
     }
 }
