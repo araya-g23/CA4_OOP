@@ -1,6 +1,6 @@
-package DAOs;
+package DAOS;
 
-import Exceptions.DaoException;
+import Exceptions.DAOException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,10 +8,10 @@ import java.sql.SQLException;
 
 
 public class MySqlDao {
-    public Connection getConnection() throws DaoException
+    public Connection getConnection() throws DAOException
     {
         String driver = "com.mysql.cj.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/taskmanager";
+        String url = "jdbc:mysql://localhost:3306/OOP_CA4";
         String username = "root";
         String password = "";
         Connection connection = null;
@@ -34,7 +34,7 @@ public class MySqlDao {
         return connection;
     }
 
-    public void freeConnection(Connection connection) throws DaoException
+    public void freeConnection(Connection connection) throws DAOException
     {
         try
         {

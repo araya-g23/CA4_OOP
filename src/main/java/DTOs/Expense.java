@@ -5,12 +5,14 @@ import java.sql.Date;
 public class Expense {
     private int expenseId;
     private String title;
+    private String category;
     private double amount;
     private Date dateIncurred;
 
-    public Expense(int expenseId, String title, double amount, Date dateIncurred) {
+    public Expense(int expenseId, String title,String category, double amount, Date dateIncurred) {
         this.expenseId = expenseId;
         this.title = title;
+        this.category = category;
         this.amount = amount;
         this.dateIncurred = dateIncurred;
     }
@@ -28,6 +30,12 @@ public class Expense {
     }
     public void setTitle(String title) {
         this.title = title;
+    }
+    public String getCategory() {
+        return category;
+    }
+    public void setCategory(String category) {
+        this.category = category;
     }
     public double getAmount() {
         return amount;
@@ -47,6 +55,7 @@ public class Expense {
         return "Expense{" +
                 "expenseId=" + expenseId +
                 ", title='" + title + '\'' +
+                ", category='" + category + '\'' +
                 ", amount=" + amount +
                 ", dateIncurred=" + dateIncurred +
                 '}';
