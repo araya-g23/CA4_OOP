@@ -74,7 +74,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
         try {
             conn = this.getConnection();
 
-            String sql = "SELECT * FROM OOP_CA4";
+            String sql = "SELECT * FROM incomes";
             stmt = conn.prepareStatement(sql);
 
             rs = stmt.executeQuery();
@@ -158,7 +158,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
 
         try{
             conn = this.getConnection();
-            String sql="INSERT INTO OOP_CA4(title,amount,dateEarned) VALUES(?,?,?)";
+            String sql="INSERT INTO incomes(title,amount,dateEarned) VALUES(?,?,?)";
             stmt=conn.prepareStatement(sql);
             stmt.setString(1,title);
             stmt.setString(2,amount);
@@ -236,7 +236,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
 
         try{
             conn = this.getConnection();
-            String sql="DELETE FROM OOP_CA4 WHERE incomeId = ?";
+            String sql="DELETE FROM incomes WHERE incomeId = ?";
             stmt=conn.prepareStatement(sql);
             stmt.setInt(1,incomeId);
             stmt.executeUpdate();
@@ -278,6 +278,9 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
             String sql="SELECT SUM(amount) FROM expenses";
             stmt=conn.prepareStatement(sql);
             rs=stmt.executeQuery();
+            if(rs.next()){
+                total=rs.getDouble(1);
+            }
         }
         catch (SQLException e){
             throw new DAOException("getTotalExpenses() " + e.getMessage());
@@ -311,9 +314,12 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
 
         try{
             conn = this.getConnection();
-            String sql="SELECT SUM(amount) FROM OOP_CA4";
+            String sql="SELECT SUM(amount) FROM incomes";
             stmt=conn.prepareStatement(sql);
             rs=stmt.executeQuery();
+            if(rs.next()){
+                total=rs.getDouble(1);
+            }
         }
         catch (SQLException e){
             throw new DAOException("getTotalIncome() " + e.getMessage());
@@ -397,7 +403,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
 
         try{
             conn = this.getConnection();
-            String sql="SELECT * FROM OOP_CA4 WHERE month(dateEarned) = ? AND YEAR(dateEarned) = ?";
+            String sql="SELECT * FROM incomes WHERE month(dateEarned) = ? AND YEAR(dateEarned) = ?";
             stmt=conn.prepareStatement(sql);
             stmt.setInt(1,month);
             stmt.setInt(2,year);
@@ -433,5 +439,28 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface {
             }
         }
         return incomeList;
+    }
+
+    @Override
+    public String getIncomeAndExpensesForMonth(int month, int year) throws DAOException {
+        double totalIncome = 0;
+        double totalExpenses = 0;
+
+        List<Income>incomes=findIncomeByMonth(month,year);
+        List<Expense>expenses=findExpensesByMonth(month,year);
+
+        for(Income income:incomes){
+            totalIncome += income.getAmount();
+        }
+
+        for(Expense expense:expenses){
+            totalExpenses += expense.getAmount();
+        }
+        double balance=totalIncome-totalExpenses;
+
+        return "Income and Expenses for " + month + "/" + year + "\n\n" +
+                "Total Income: €" + totalIncome + "\n" +
+                "Total Expenses: €" + totalExpenses + "\n" +
+                "Remaining Balance: €" + balance;
     }
 }

@@ -17,5 +17,6 @@ public double getTotalExpense() throws DAOException;
 public double getTotalIncome() throws DAOException;
 public List<Expense>findExpensesByMonth(int month,int year) throws DAOException;
 public List<Income>findIncomeByMonth(int month,int year) throws DAOException;
+public String getIncomeAndExpensesForMonth(int month,int year) throws DAOException;
 
 }

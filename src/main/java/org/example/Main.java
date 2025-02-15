@@ -3,6 +3,7 @@ package org.example;
 import DAOS.MySqlUserDao;
 import DAOS.UserDaoInterface;
 import DTOs.Expense;
+import DTOs.Income;
 import Exceptions.DAOException;
 
 import java.util.List;
@@ -15,43 +16,52 @@ public class Main {
         Scanner sc=new Scanner(System.in);
         int choice;
 
-        try{
-            dispalyMenu.menu();
-            choice=sc.nextInt();
+        try {
 
-            switch(choice) {
-                case 1:
-                    findAllExpense();
-                    break;
+            while (true) {
+                dispalyMenu.menu();
+                choice = sc.nextInt();
+                switch (choice) {
+                    case 1:
+                        findAllExpense();
+                        break;
                     case 2:
                         getTotalExpense();
                         break;
-                        case 3:
-                            addNewExpense();
+                    case 3:
+                        addNewExpense();
+                        break;
+                    case 4:
+                        deleteExpense();
+                        break;
+                    case 5:
+                        findAllIncome();
+                        break;
+                    case 6:
+                        getTotalIncome();
+                        break;
+                    case 7:
+                        addNewIncome();
+                        break;
+                    case 8:
+                        deleteIncome();
+                        break;
+                    case 9:
+
+                        findExpensesByMonth();
+                        findIncomeByMonth();
+                        break;
+                        case 10:
+                            getIncomeAndExpensesForMonth();
                             break;
-                            case 4:
-                                deleteExpense();
-                                break;
-                                case 5:
-                                    findAllIncome();
-                                    break;
-                                    case 6:
-                                        getTotalIncome();
-                                        break;
-                                        case 7:
-                                            addNewIncome();
-                                            break;
-                                            case 8:
-                                                deleteIncome();
-                                                break;
-                                                case 9:
-                                                    findExpensesByMonth();
-                                                    findIncomeByMonth();
-                                                    break;
-                                                    default:
-                                                        System.out.printf("Invalid choice! Try again!\n");
+                            case 11:
+                                System.out.println("exit");
+                                return;
+                    default:
+                        System.out.printf("Invalid choice! Try again!\n");
 
 
+                }
             }
         }
         catch (DAOException e){
@@ -59,9 +69,15 @@ public class Main {
         }
     }
 
-    public static void getTotalIncome() {
-    }
 
+
+
+    public static void getTotalIncome() {
+        UserDaoInterface userDao=new MySqlUserDao();
+        System.out.println("Displaying total income");
+        double totalIncome=userDao.getTotalIncome();
+        System.out.println("Total income: "+totalIncome);
+    }
     public static void findAllExpense() {
       UserDaoInterface usdi=new MySqlUserDao();
         System.out.println("Displaying all expenses: \n");
@@ -104,14 +120,37 @@ public class Main {
         expenseId=sc.nextInt();
         usdi.deleteExpense(expenseId);
     }
-    public static void findAllIncome() {}
-    public static void addNewIncome() {}
+    public static void findAllIncome() {
+        UserDaoInterface usdi=new MySqlUserDao();
+        System.out.println("Displaying all income: \n");
+        List<Income> allIncomeList=usdi.findAllIncome();
+        if(allIncomeList.isEmpty()){
+            System.out.println("No Income found!");
+        }
+        for(Income income:allIncomeList){
+            System.out.println("Income: "+income);
+        }
+    }
+    public static void addNewIncome() {
+        UserDaoInterface usdi=new MySqlUserDao();
+        Scanner sc=new Scanner(System.in);
+        String title,amount,dateEarned;
+        System.out.println("Enter title: ");
+        title=sc.nextLine();
+        System.out.println("please enter amount: ");
+        amount=sc.nextLine();
+        System.out.println("Enter date earned: ");
+        dateEarned=sc.nextLine();
+
+        usdi.addNewIncome(title,amount,dateEarned);
+    }
     public static void findExpensesByMonth() {
         UserDaoInterface usdi=new MySqlUserDao();
         Scanner sc=new Scanner(System.in);
         int month;
         int year;
 
+        System.out.println("*******Expenses*********  \n");
         System.out.println("Enter month: ");
         month=sc.nextInt();
         System.out.println("Enter year: ");
@@ -123,10 +162,50 @@ public class Main {
         for(Expense expense:allExpenseList){
             System.out.println("Expense: "+expense);
         }
+        System.out.println("\n");
+        System.out.println(" *********Incomes******** \n");
 
     }
-    public static void findIncomeByMonth() {}
-    public static void deleteIncome() {}
+    public static void findIncomeByMonth() {
+        UserDaoInterface usdi=new MySqlUserDao();
+        Scanner sc=new Scanner(System.in);
+        int month;
+        int year;
+        System.out.println("Enter month: ");
+        month=sc.nextInt();
+        System.out.println("Enter year: ");
+        year=sc.nextInt();
+        List<Income>allIncomeList=usdi.findIncomeByMonth(month,year);
+        if(allIncomeList.isEmpty()){
+            System.out.println("No Income found!");
+        }
+        for(Income income:allIncomeList){
+            System.out.println("Income: "+income);
+        }
+    }
+    public static void deleteIncome() {
+        UserDaoInterface usdi=new MySqlUserDao();
+        Scanner sc=new Scanner(System.in);
+        int incomeId;
+        System.out.println("Enter income id you want to delete: ");
+        incomeId=sc.nextInt();
+        usdi.deleteIncome(incomeId);
+    }
+    public static void getIncomeAndExpensesForMonth() {
+        UserDaoInterface usdi=new MySqlUserDao();
+        Scanner sc=new Scanner(System.in);
+        int month;
+        int year;
+        System.out.println("Enter month: ");
+        month=sc.nextInt();
+        System.out.println("Enter year: ");
+        year=sc.nextInt();
+
+        String summary=usdi.getIncomeAndExpensesForMonth(month,year);
+        System.out.println("\n"+summary);
+
+
+    }
 
 
 
